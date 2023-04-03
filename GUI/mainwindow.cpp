@@ -19,6 +19,26 @@ std::string eBonus;
 std::string eBuilding;
 std::string eOffice;
 std::string eJob;
+std::string decrypt_eName;
+std::string decrypt_eBuilding;
+std::string decrypt_eOffice;
+std::string decrypt_eJob;
+int key = 20;
+std::string encrypt(std::string s, int n) {
+    int index = s.size();
+    for (int i = 0; i < index; i++) {
+        s[i] = s[i] + n;
+    }
+    return s;
+}
+
+std::string decrypt(std::string s, int n) {
+    int index = s.size();
+    for (int i = 0; i < index; i++) {
+        s[i] = s[i] - n;
+    }
+    return s;
+}
 class Employee {
 public:
     int id;
@@ -178,12 +198,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 EmployeeLogin el[] = {
-        EmployeeLogin(1, "Joseph", "Rudd", 3, "jrudd", "123abc456" ),
+        EmployeeLogin(1, "John", "Smith", 3, "jsmith", "123abc456" ),
         EmployeeLogin(2, "Josh", "Wurtenberg", 3, "jwurtenberg", "654cba321")
 };
 
 EmployeeInfo ei[] = {
-        EmployeeInfo(1, "Joseph", "Rudd", 1, 60000, 10000, "Library West", "210G", "Information Technology Specialist"),
+        EmployeeInfo(1, "John", "Smith", 1, 60000, 10000, "Library West", "210G", "Information Technology Specialist"),
         EmployeeInfo(2, "Josh", "Wurtenberg", 3, 60000, 10000, "Library West", "210H", "Senior Developer")
 };
 void MainWindow::on_pushButton_clicked()
@@ -238,23 +258,27 @@ for(int i = 0; i < 2; i++){
    }
 }
 void Dialog_2::on_pushButton_clicked(){
-    std::ifstream joseph("joseph.txt");
+    std::ifstream john("john.txt");
     num = 2;
-    std::getline(go_to_line(joseph, 1), eName, '\n');
-    std::getline(go_to_line(joseph, 2), eSalary, '\n');
-    std::getline(go_to_line(joseph, 3), eBonus, '\n');
-    std::getline(go_to_line(joseph, 4), eBuilding, '\n');
-    std::getline(go_to_line(joseph, 5), eOffice, '\n');
-    std::getline(go_to_line(joseph, 6), eJob, '\n');
+    std::getline(go_to_line(john, 1), eName, '\n');
+    std::getline(go_to_line(john, 2), eSalary, '\n');
+    std::getline(go_to_line(john, 3), eBonus, '\n');
+    std::getline(go_to_line(john, 4), eBuilding, '\n');
+    std::getline(go_to_line(john, 5), eOffice, '\n');
+    std::getline(go_to_line(john, 6), eJob, '\n');
 
 
 
-    QString employeeName = QString::fromStdString(eName);
+    decrypt_eName = decrypt(eName,key);
+    decrypt_eBuilding = decrypt(eBuilding,key);
+    decrypt_eOffice = decrypt(eOffice,key);
+    decrypt_eJob = decrypt(eJob,key);
+    QString employeeName = QString::fromStdString(decrypt_eName);
     QString employeeSalary = QString::fromStdString(eSalary);
     QString employeeBonus = QString::fromStdString(eBonus);
-    QString employeeBuilding = QString::fromStdString(eBuilding);
-    QString employeeOffice = QString::fromStdString(eOffice);
-    QString employeeJob = QString::fromStdString(eJob);
+    QString employeeBuilding = QString::fromStdString(decrypt_eBuilding);
+    QString employeeOffice = QString::fromStdString(decrypt_eOffice);
+    QString employeeJob = QString::fromStdString(decrypt_eJob);
     newDialog = new Dialog(this);
     newDialog->ui->label->setText(employeeName);
     newDialog->ui->label_3->setText(employeeSalary);
@@ -274,12 +298,16 @@ void Dialog_2::on_pushButton_2_clicked(){
     std::getline(go_to_line(josh, 4), eBuilding, '\n');
     std::getline(go_to_line(josh, 5), eOffice, '\n');
     std::getline(go_to_line(josh, 6), eJob, '\n');
-    QString employeeName = QString::fromStdString(eName);
+    decrypt_eName = decrypt(eName,key);
+    decrypt_eBuilding = decrypt(eBuilding,key);
+    decrypt_eOffice = decrypt(eOffice,key);
+    decrypt_eJob = decrypt(eJob,key);
+    QString employeeName = QString::fromStdString(decrypt_eName);
     QString employeeSalary = QString::fromStdString(eSalary);
     QString employeeBonus = QString::fromStdString(eBonus);
-    QString employeeBuilding = QString::fromStdString(eBuilding);
-    QString employeeOffice = QString::fromStdString(eOffice);
-    QString employeeJob = QString::fromStdString(eJob);
+    QString employeeBuilding = QString::fromStdString(decrypt_eBuilding);
+    QString employeeOffice = QString::fromStdString(decrypt_eOffice);
+    QString employeeJob = QString::fromStdString(decrypt_eJob);
     newDialog = new Dialog(this);
     newDialog->ui->label->setText(employeeName);
     newDialog->ui->label_3->setText(employeeSalary);
@@ -297,20 +325,20 @@ void Dialog::on_pushButton_clicked(){
     if(num == 1){
         file.open("joshua.txt", std::ios::trunc);
     } else if(num == 2){
-        file.open("joseph.txt", std::ios::trunc);
+        file.open("john.txt", std::ios::trunc);
     }
     if(permlvl_3){
-        file << ui->lineEdit->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit->text().toStdString(), key) << "\n";
         audit << "Changed " << eName << " to " << ui->lineEdit->text().toStdString() << "\n";
-        file << ui->lineEdit_2->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit_2->text().toStdString(), key) << "\n";
         audit << "Changed " << eSalary << " to " << ui->lineEdit_2->text().toStdString() << "\n";
-        file << ui->lineEdit_3->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit_3->text().toStdString(), key) << "\n";
         audit << "Changed " << eBonus << " to " << ui->lineEdit_3->text().toStdString() << "\n";
-        file << ui->lineEdit_4->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit_4->text().toStdString(), key) << "\n";
         audit << "Changed " << eBuilding << " to " << ui->lineEdit_4->text().toStdString() << "\n";
-        file << ui->lineEdit_5->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit_5->text().toStdString(), key) << "\n";
         audit << "Changed " << eOffice << " to " << ui->lineEdit_5->text().toStdString() << "\n";
-        file << ui->lineEdit_6->text().toStdString() << "\n";
+        file << encrypt(ui->lineEdit_6->text().toStdString(), key) << "\n";
         audit << "Changed " << eJob << " to " << ui->lineEdit_6->text().toStdString() << "\n";
         QMessageBox::information(this, "Admin", "Data updated successfully.");
         return;
