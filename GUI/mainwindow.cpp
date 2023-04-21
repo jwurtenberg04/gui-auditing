@@ -20,22 +20,42 @@ std::string eBuilding;
 std::string eOffice;
 std::string eJob;
 std::string decrypt_eName;
+std::string decrypt_eSalary;
+std::string decrypt_eBonus;
 std::string decrypt_eBuilding;
 std::string decrypt_eOffice;
 std::string decrypt_eJob;
 int key = 20;
+
+char CODEX[] = { '0', '1', '2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h',
+'i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E',
+'F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','#',
+'$','%','&','(',')','*','+',',',' ','-','.','/',':',';','<','=','>','?','@','[',']', '^',
+'_','`','{', '|', '}','~' };
+
+int find(char a[], int len, char find) {
+    for (int i = 0; i < len; i++) {
+        if (a[i] == find) {
+            return i;
+        }
+    }
+    return -1;
+}
 std::string encrypt(std::string s, int n) {
     int index = s.size();
+    int x;
     for (int i = 0; i < index; i++) {
-        s[i] = s[i] + n;
+        x = find(CODEX, sizeof(CODEX), s[i]);
+        s[i] = CODEX[(x + n) % sizeof(CODEX)];
     }
     return s;
 }
-
 std::string decrypt(std::string s, int n) {
     int index = s.size();
+    int x;
     for (int i = 0; i < index; i++) {
-        s[i] = s[i] - n;
+        x = find(CODEX, sizeof(CODEX), s[i]);
+        s[i] = CODEX[(sizeof(CODEX)+(x-n)) % sizeof(CODEX)];
     }
     return s;
 }
@@ -259,6 +279,10 @@ for(int i = 0; i < 2; i++){
 }
 void Dialog_2::on_pushButton_clicked(){
     std::ifstream john("john.txt");
+    if (!john.is_open()) {
+        std::cout << "error opening file" << std::endl;
+        return;
+    }
     num = 2;
     std::getline(go_to_line(john, 1), eName, '\n');
     std::getline(go_to_line(john, 2), eSalary, '\n');
@@ -270,12 +294,14 @@ void Dialog_2::on_pushButton_clicked(){
 
 
     decrypt_eName = decrypt(eName,key);
+    decrypt_eSalary = decrypt(eSalary,key);
+    decrypt_eBonus = decrypt(eBonus,key);
     decrypt_eBuilding = decrypt(eBuilding,key);
     decrypt_eOffice = decrypt(eOffice,key);
     decrypt_eJob = decrypt(eJob,key);
     QString employeeName = QString::fromStdString(decrypt_eName);
-    QString employeeSalary = QString::fromStdString(eSalary);
-    QString employeeBonus = QString::fromStdString(eBonus);
+    QString employeeSalary = QString::fromStdString(decrypt_eSalary);
+    QString employeeBonus = QString::fromStdString(decrypt_eBonus);
     QString employeeBuilding = QString::fromStdString(decrypt_eBuilding);
     QString employeeOffice = QString::fromStdString(decrypt_eOffice);
     QString employeeJob = QString::fromStdString(decrypt_eJob);
@@ -291,6 +317,10 @@ void Dialog_2::on_pushButton_clicked(){
 
 void Dialog_2::on_pushButton_2_clicked(){
     std::ifstream josh("joshua.txt");
+    if (!josh.is_open()) {
+        std::cout << "error opening file" << std::endl;
+        return;
+    }
     num = 1;
     std::getline(go_to_line(josh, 1), eName, '\n');
     std::getline(go_to_line(josh, 2), eSalary, '\n');
@@ -299,12 +329,14 @@ void Dialog_2::on_pushButton_2_clicked(){
     std::getline(go_to_line(josh, 5), eOffice, '\n');
     std::getline(go_to_line(josh, 6), eJob, '\n');
     decrypt_eName = decrypt(eName,key);
+    decrypt_eSalary = decrypt(eSalary,key);
+    decrypt_eBonus = decrypt(eBonus,key);
     decrypt_eBuilding = decrypt(eBuilding,key);
     decrypt_eOffice = decrypt(eOffice,key);
     decrypt_eJob = decrypt(eJob,key);
     QString employeeName = QString::fromStdString(decrypt_eName);
-    QString employeeSalary = QString::fromStdString(eSalary);
-    QString employeeBonus = QString::fromStdString(eBonus);
+    QString employeeSalary = QString::fromStdString(decrypt_eSalary);
+    QString employeeBonus = QString::fromStdString(decrypt_eBonus);
     QString employeeBuilding = QString::fromStdString(decrypt_eBuilding);
     QString employeeOffice = QString::fromStdString(decrypt_eOffice);
     QString employeeJob = QString::fromStdString(decrypt_eJob);
@@ -329,17 +361,17 @@ void Dialog::on_pushButton_clicked(){
     }
     if(permlvl_3){
         file << encrypt(ui->lineEdit->text().toStdString(), key) << "\n";
-        audit << "Changed " << eName << " to " << ui->lineEdit->text().toStdString() << "\n";
+        audit << "Changed " << eName << " to " << encrypt(ui->lineEdit->text().toStdString(), key) << "\n";
         file << encrypt(ui->lineEdit_2->text().toStdString(), key) << "\n";
-        audit << "Changed " << eSalary << " to " << ui->lineEdit_2->text().toStdString() << "\n";
+        audit << "Changed " << eSalary << " to " << encrypt(ui->lineEdit_2->text().toStdString(), key) << "\n";
         file << encrypt(ui->lineEdit_3->text().toStdString(), key) << "\n";
-        audit << "Changed " << eBonus << " to " << ui->lineEdit_3->text().toStdString() << "\n";
+        audit << "Changed " << eBonus << " to " << encrypt(ui->lineEdit_3->text().toStdString(), key) << "\n";
         file << encrypt(ui->lineEdit_4->text().toStdString(), key) << "\n";
-        audit << "Changed " << eBuilding << " to " << ui->lineEdit_4->text().toStdString() << "\n";
+        audit << "Changed " << eBuilding << " to " << encrypt(ui->lineEdit_4->text().toStdString(), key) << "\n";
         file << encrypt(ui->lineEdit_5->text().toStdString(), key) << "\n";
-        audit << "Changed " << eOffice << " to " << ui->lineEdit_5->text().toStdString() << "\n";
+        audit << "Changed " << eOffice << " to " << encrypt(ui->lineEdit_5->text().toStdString(), key) << "\n";
         file << encrypt(ui->lineEdit_6->text().toStdString(), key) << "\n";
-        audit << "Changed " << eJob << " to " << ui->lineEdit_6->text().toStdString() << "\n";
+        audit << "Changed " << eJob << " to " << encrypt(ui->lineEdit_6->text().toStdString(), key) << "\n";
         QMessageBox::information(this, "Admin", "Data updated successfully.");
         return;
     } else{
